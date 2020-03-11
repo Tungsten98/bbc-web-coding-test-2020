@@ -1,11 +1,12 @@
 // Server for BBC Web Coding Test 2020
+require('dotenv').config();
 
 // Use the Express framework for Node.js
 const express = require('express');
 const fetch = require('node-fetch');
 
-// Define the port (3000)
-const port = 3000;
+// Define the port (3001)
+const port = process.env.PORT || 3001;
 
 // Define some Express middleware that fetches and processes the required data
 const fetchArticleData = async (request, response, next) => {
