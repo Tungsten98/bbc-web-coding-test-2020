@@ -16,7 +16,7 @@ const fetchArticleData = (request, response, next) => {
     request.content = JSON.parse(data);
     next();
 
-  } catch(error) {
+  } catch (error) {
     // Passing anything apart from 'route' to next informs Express that it
     // should be handling the error
     next(error);
@@ -31,17 +31,25 @@ server.get('/api/:article_id(article-[12345])',
   fetchArticleData,
   (request, response) => {
     try {
-      const data = request.content
-      response.json(data)
-    } catch(error) {
-      response.status(500).send(error)
+      const data = request.content;
+      response.json(data);
+    } catch (error) {
+      response.status(500).send(error);
     }
   }
 );
 
-// server.post('/rating', (request, response) => {
-//
-// });
+// Post rankings to 'database'
+server.post('/api/ranking', (request, response) => {
+  try {
+    const data = JSON.stringify(request.query);
+    console.log(data)
+    fs.writeFileSync('server/db/rankings.json', data, 'utf-8');
+    response.status(200).send("Rankings successfully POSTed.");
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
 
 // Make the server listen to requests on the specified port
 server.listen(port, (error) => {

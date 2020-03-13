@@ -38,7 +38,7 @@ const fetchArticleData = async (article_num) => {
 
   }
   catch (error) {
-    console.warn(`Error could not load article: ${error.message}`)
+    console.error(`Error could not load article: ${error.message}`)
     return {
       title: '',
       body: []
@@ -68,7 +68,7 @@ const pickComponentForDataModel = (id, data) => {
       component = <List key={key} model={data.model} />;
       break;
     default:
-      console.warn(`Error: component for type ${data.type} not implemented.`);
+      console.error(`Error: component for type ${data.type} not implemented.`);
   }
 
   return component;
@@ -117,7 +117,7 @@ class Articles extends React.Component {
       this.updateTitleList(data.title);
     }
     catch (error) {
-      console.log(`Error unable to load article: ${error.message}`);
+      console.error(`Error unable to load article: ${error.message}`);
     }
 
     this.preloadNextArticle();
@@ -135,7 +135,7 @@ class Articles extends React.Component {
         this.updateTitleList(this.nextArticleData.title);
       }
       catch (error) {
-        console.log(`Error unable to load article: ${error.message}`);
+        console.error(`Error unable to load article: ${error.message}`);
         this.nextArticleData = this.emptyArticleDataTemplate;
       }
     }
