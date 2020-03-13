@@ -1,10 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 
+import Button from './components/Button';
 import Heading from './components/Heading';
-import Paragraph from './components/Paragraph';
 import Image from './components/Image';
 import List from './components/List';
+import Paragraph from './components/Paragraph';
 
 // Helper functions
 // Generate the randomised article list and fetching the required data
@@ -35,7 +36,8 @@ const fetchArticleData = async (article_num) => {
     const response = await axios.get(requestURL);
     return await response.data;
 
-  } catch (error) {
+  }
+  catch (error) {
     console.warn(`Error could not load article: ${error.message}`)
     return {
       title: '',
@@ -76,9 +78,13 @@ const pickComponentForDataModel = (id, data) => {
 class ArticlesRanker extends React.Component {
   constructor() {
     super();
-    this.articleSequence = generateRandomArticleSequence();
+    // Bind methods
+    this.preloadNextArticle = this.preloadNextArticle.bind(this);
+    this.moveToNextArticle = this.moveToNextArticle.bind(this);
+    this.handleNextArticleButton = this.handleNextArticleButton.bind(this);
 
-    const emptyArticleDataTemplate = {
+    this.articleSequence = generateRandomArticleSequence();
+    this.emptyArticleDataTemplate = {
       title: '',
       body: []
     };
@@ -86,26 +92,70 @@ class ArticlesRanker extends React.Component {
     // Initialise state
     this.state = {
       currentArticleIndex: 0,
-      currentArticleData: emptyArticleDataTemplate,
-      nextArticleData: emptyArticleDataTemplate
+      currentArticleData: this.emptyArticleDataTemplate,
+      nextArticleData: this.emptyArticleDataTemplate
     };
   }
 
   async componentDidMount() {
-    const data = await fetchArticleData(this.articleSequence[
-      this.state.currentArticleIndex]);
+    try {
+      const data = await fetchArticleData(this.articleSequence[
+        this.state.currentArticleIndex]);
 
-    this.setState({ currentArticleData: data });
+      this.setState({ currentArticleData: data });
 
-    // Render the title
-    document.title = this.state.currentArticleData.title;
+      // Render the title
+      document.title = this.state.currentArticleData.title;
+    }
+    catch (error) {
+      console.log(`Error unable to load article: ${error.message}`);
+    }
+
+    this.preloadNextArticle();
+  }
+
+  async preloadNextArticle() {
+    const nextArticleIndex = this.state.currentArticleIndex + 1;
+    if (nextArticleIndex >= this.articleSequence.length) {
+      this.setState({ nextArticleData: this.emptyArticleDataTemplate });
+    }
+    else {
+      try {
+        const nextData = await fetchArticleData(this.articleSequence[
+          nextArticleIndex]);
+        this.setState({ nextArticleData: nextData });
+      }
+      catch (error) {
+        console.log(`Error unable to load article: ${error.message}`);
+        this.setState({ nextArticleData: this.emptyArticleDataTemplate });
+      }
+    }
+  }
+
+  moveToNextArticle() {
+    this.setState({
+      currentArticleIndex: this.state.currentArticleIndex + 1,
+      currentArticleData: this.state.nextArticleData
+    });
+
+    this.preloadNextArticle();
+  }
+
+  handleNextArticleButton(mouseClickEvent) {
+    mouseClickEvent.preventDefault();
+    this.moveToNextArticle();
   }
 
   render() {
     let articleComponents = this.state.currentArticleData.body.map(
       (data, index) => (pickComponentForDataModel(index, data)));
 
-    return <article>{articleComponents}</article>;
+    return (
+      <article>
+        {articleComponents}
+        <Button label="Next" onClick={this.handleNextArticleButton} />
+      </article>
+    );
   }
 }
 
