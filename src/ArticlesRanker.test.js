@@ -5,7 +5,50 @@ import { render, waitForElement } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('axios');
-jest.mock('./ArticlesRanker');
+
+const mockGenRandSequence = jest.fn(() => 1);
+const mockFetchArticleData = jest.fn((article_num) => {
+  return {
+    title: 'Test Title',
+    body: [
+      {
+        type: 'heading',
+        model: { text: 'Test Heading' }
+      },
+      {
+        type: 'paragraph',
+        model: { text: 'Test paragraph' }
+      },
+      {
+        type: 'image',
+        model: {
+          url: 'http://localhost:3001/image',
+          altText: 'Test image',
+          height: 420,
+          width: 640
+        }
+      },
+      {
+        type: 'list',
+        model: {
+          type: 'unordered',
+          items: [
+            'Test item 1',
+            'Test item 2'
+          ]
+        }
+      }
+    ]
+  };
+});
+// jest.mock('./ArticlesRanker', () => {
+//   return jest.fn().mockImplementation(() => {
+//     return {
+//       generateRandomArticleSequence: mockGenRandSequence,
+//       fetchArticleData: mockFetchArticleData
+//     };
+//   })
+// });
 
 // Unit tests
 describe('generateRandomArticleSequence()', () => {
@@ -121,44 +164,12 @@ describe('Rendering (render() and render[Property]() for each property)',
   () => {
     // Setup for the series of rendering tests
     // Mock returned data from server
-    const mockedData = {
-      title: 'Test Title',
-      body: [
-        {
-          type: 'heading',
-          model: { text: 'Test Heading' }
-        },
-        {
-          type: 'paragraph',
-          model: { text: 'Test paragraph' }
-        },
-        {
-          type: 'image',
-          model: {
-            url: 'http://localhost:3001/image',
-            altText: 'Test image',
-            height: 420,
-            width: 640
-          }
-        },
-        {
-          type: 'list',
-          model: {
-            type: 'unordered',
-            items: [
-              'Test item 1',
-              'Test item 2'
-            ]
-          }
-        }
-      ]
-    };
+    // const mockedData =
     // Mock call to generateRandomArticleSequence()
-    ArticlesRanker.prototype.generateRandomArticleSequence.mockImplementation(
-      () => 1);
+    jest.spyOn(ArticlesRanker, 'generateRandomArticleSequence');
+
     // Mock call to fetchArticleData()
-    ArticlesRanker.prototype.fetchArticleData.mockImplementation(
-      (article_num) => mockedData);
+    jest.spyOn(ArticlesRanker, 'fetchArticleData');
 
     axiosMock.get.mockResolvedValueOnce({
       status: 301,

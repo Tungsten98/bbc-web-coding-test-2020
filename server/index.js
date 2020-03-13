@@ -6,7 +6,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 
 // Define the port (3001)
-const port = process.env.PORT || 3001;
+const port = process.env.SERVER_PORT || 3001;
 
 // Define some Express middleware that fetches and processes the required data
 const fetchArticleData = async (request, response, next) => {
