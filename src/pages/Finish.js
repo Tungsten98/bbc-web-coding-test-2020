@@ -1,19 +1,24 @@
 import React from 'react';
 
-import Button from '../components/Button';
+import AppButton from '../components/Button';
+
+import Container from 'react-bootstrap/Container';
 
 const Finish = (props) => {
   document.title = "ArticlesRanker";
 
   return (
-    <section>
-      <section>
+    <Container>
+      <br />
+      <br />
+      <Container>
         <h1>Your rankings have been submitted</h1>
-      </section>
-      <section>
-        <Button onClick={props.handleRestart} label="Start again" />
-      </section>
-    </section>
+      </Container>
+      <br />
+      <Container>
+        <AppButton onClick={props.handleRestart} label="Start again" />
+      </Container>
+    </Container>
   );
 };
 

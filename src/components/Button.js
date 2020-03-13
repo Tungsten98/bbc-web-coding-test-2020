@@ -1,11 +1,13 @@
 import React from 'react';
 
-const Button = (props) => (
-  <button
-    type="button"
+import Button from 'react-bootstrap/Button';
+
+const AppButton = (props) => (
+  <Button
+    variant="dark"
     onClick={props.onClick}
     >
     {props.label}
-    </button>);
+    </Button>);
 
-export default Button;
+export default AppButton;

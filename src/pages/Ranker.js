@@ -1,8 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 
-import Button from '../components/Button';
+import AppButton from '../components/Button';
 import RankerOption from '../components/RankerOption';
+
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 
 class Ranker extends React.Component {
   constructor(props) {
@@ -96,43 +99,50 @@ class Ranker extends React.Component {
   render() {
     const articleTitles = this.titles.map((title) => {
       return (
-        <tr key={title}>
-          <td>
+        <Container key={title}>
+          <Row>
             <RankerOption
               articleTitle={title}
               rank={this.state.ranks[title]}
               onClick={this.handleRankerOptionClick}
               />
-          </td>
-        </tr>
+          </Row>
+          <br />
+        </Container>
       );
     });
 
     return (
-      <section>
-        <section>
+      <Container>
+        <br />
+        <br />
+        <Container>
           <h1>Rank the articles</h1>
-        </section>
-        <section>
+        </Container>
+        <br />
+        <Container>
           <p>Click on the article titles to assign a rank. Click on the title
               again to remove the rank. Click on 'Submit rankings' once
               you have ranked all the articles.</p>
-        </section>
-        <section>
+        </Container>
+        <br />
+        <Container>
           <form>
-            <table>
-              <tbody>
-                {articleTitles}
-              </tbody>
-            </table>
-            <span className="error">
+            <Container>
+              {articleTitles}
+            </Container>
+            <br />
+            <span className="text-danger">
               {this.state.displayNotCompleteError &&
                 "Please give a rank to all articles"}
             </span>
-            <Button onClick={this.handleSubmitClick} label="Submit rankings" />
+            <br />
+            <br />
+            <AppButton onClick={this.handleSubmitClick} label="Submit rankings" />
           </form>
-        </section>
-      </section>
+          <br />
+        </Container>
+      </Container>
     );
   }
 }

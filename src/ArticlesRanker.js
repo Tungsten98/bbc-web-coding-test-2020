@@ -5,6 +5,10 @@ import Finish from './pages/Finish';
 import Ranker from './pages/Ranker';
 import Start from './pages/Start';
 
+// Styling imports
+import Container from 'react-bootstrap/Container';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 class ArticlesRanker extends React.Component {
   constructor() {
     super();
@@ -52,7 +56,11 @@ class ArticlesRanker extends React.Component {
   }
 
   render() {
-    return this.state.currentView;
+    return (
+      <Container>
+        {this.state.currentView}
+      </Container>
+    );
   }
 }
 

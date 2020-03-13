@@ -17,12 +17,16 @@ class Image extends React.Component {
     // Modern browsers will automatically handle redirects
     // from src
     return (
-      <img
-        src={this.imgSrc}
-        height={this.height}
-        width={this.width}
-        alt={this.altText}
-        />
+      <>
+        <img
+          src={this.imgSrc}
+          height={this.height}
+          width={this.width}
+          alt={this.altText}
+          />
+        <br />
+        <br />
+      </>
     );
   }
 }

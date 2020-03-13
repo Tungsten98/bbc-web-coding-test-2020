@@ -1,35 +1,13 @@
 import React from 'react';
 import axios from 'axios';
 
-import Button from '../components/Button';
+import AppButton from '../components/Button';
 import Heading from '../components/Heading';
 import Image from '../components/Image';
 import List from '../components/List';
 import Paragraph from '../components/Paragraph';
 
 // Helper functions
-// Generate the randomised article list and fetching the required data
-const generateRandomArticleSequence = () => {
-  // Define the article numbers
-  let randomArray = [1, 2, 3, 4, 5];
-
-  // Shuffle them to get a random ordering
-  // Start iterator from end of array
-  let randomArrayIterator = 5;
-  while (randomArrayIterator > 0) {
-    // Generate a random index
-    let indexToSwap = Math.floor(Math.random() * randomArrayIterator);
-    randomArrayIterator--;
-
-    // Swap the element at the iterator with the element at the index
-    let valueToSwap = randomArray[randomArrayIterator];
-    randomArray[randomArrayIterator] = randomArray[indexToSwap];
-    randomArray[indexToSwap] = valueToSwap;
-  }
-
-  return randomArray;
-}
-
 const fetchArticleData = async (article_num) => {
   try {
     const requestURL = `/api/article-${article_num}`;
@@ -86,7 +64,6 @@ class Articles extends React.Component {
     this.moveToNextArticle = this.moveToNextArticle.bind(this);
     this.handleNextArticleButton = this.handleNextArticleButton.bind(this);
 
-    this.articleSequence = generateRandomArticleSequence();
     this.emptyArticleDataTemplate = {
       title: '',
       body: []
@@ -94,7 +71,7 @@ class Articles extends React.Component {
     // We use these to hold our current index and next article's data
     // We leave these outside of the component state as it does not directly
     // influence the rendering
-    this.currentArticleIndex = 0;
+    this.currentArticleNum = 1;
     this.nextArticleData = this.emptyArticleDataTemplate;
 
     // Initialise state
@@ -105,8 +82,7 @@ class Articles extends React.Component {
 
   async componentDidMount() {
     try {
-      const data = await fetchArticleData(this.articleSequence[
-        this.currentArticleIndex]);
+      const data = await fetchArticleData(this.currentArticleNum);
 
       this.setState({ currentArticleData: data });
 
@@ -124,14 +100,13 @@ class Articles extends React.Component {
   }
 
   async preloadNextArticle() {
-    const nextArticleIndex = this.currentArticleIndex + 1;
-    if (nextArticleIndex >= this.articleSequence.length) {
+    const nextArticleNum = this.currentArticleNum + 1;
+    if (nextArticleNum > 5) {
       this.nextArticleData = this.emptyArticleDataTemplate;
     }
     else {
       try {
-        this.nextArticleData = await fetchArticleData(this.articleSequence[
-          nextArticleIndex]);
+        this.nextArticleData = await fetchArticleData(nextArticleNum);
         this.updateTitleList(this.nextArticleData.title);
       }
       catch (error) {
@@ -142,7 +117,7 @@ class Articles extends React.Component {
   }
 
   moveToNextArticle() {
-    this.currentArticleIndex++;
+    this.currentArticleNum++;
     this.setState({
       currentArticleData: this.nextArticleData
     });
@@ -150,7 +125,7 @@ class Articles extends React.Component {
     // Render the title
     document.title = this.nextArticleData.title;
 
-    if (this.currentArticleIndex < this.articleSequence.length) {
+    if (this.currentArticleNum <= 5) {
       this.preloadNextArticle();
     }
     else {
@@ -169,8 +144,13 @@ class Articles extends React.Component {
 
     return (
       <article>
+        <br />
+        <br />
         {articleComponents}
-        <Button label="Next" onClick={this.handleNextArticleButton} />
+        <br />
+        <AppButton label="Next" onClick={this.handleNextArticleButton} />
+        <br />
+        <br />
       </article>
     );
   }

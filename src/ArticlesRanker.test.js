@@ -41,36 +41,8 @@ const mockFetchArticleData = jest.fn((article_num) => {
     ]
   };
 });
-// jest.mock('./ArticlesRanker', () => {
-//   return jest.fn().mockImplementation(() => {
-//     return {
-//       generateRandomArticleSequence: mockGenRandSequence,
-//       fetchArticleData: mockFetchArticleData
-//     };
-//   })
-// });
 
 // Unit tests
-describe('generateRandomArticleSequence()', () => {
-  const sampleSequence
-    = ArticlesRanker.prototype.generateRandomArticleSequence();
-
-  test("is an array", () => {
-    expect(sampleSequence).toBeInstanceOf(Array);
-  });
-
-  // Below two tests imply that the numbers in sampleSequence are unique.
-  test("is of length 5", () => {
-    expect(sampleSequence).toHaveLength(5);
-  });
-
-  test("contains the numbers [1, 2, 3, 4, 5]", () => {
-    for (let elem = 1; elem <= 5; elem++) {
-      expect(sampleSequence).toContain(elem);
-    }
-  });
-});
-
 describe('fetchArticleData()', () => {
   test("executes GET requests when given article_num's between 1 and 5",
     async () => {
