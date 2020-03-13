@@ -1,26 +1,35 @@
 import React from 'react';
 
 import Articles from './pages/Articles';
+import Finish from './pages/Finish';
 import Ranker from './pages/Ranker';
+import Start from './pages/Start';
 
 class ArticlesRanker extends React.Component {
   constructor() {
     super();
 
     this.appendTitle = this.appendTitle.bind(this);
+    this.goToArticles = this.goToArticles.bind(this);
     this.goToRanker = this.goToRanker.bind(this);
+    this.goToFinish = this.goToFinish.bind(this);
 
     this.articleTitles = [];
     this.viewStates = {
+      START: <Start handleStart={this.goToArticles} />,
       ARTICLES: <Articles
                   updateTitleList={this.appendTitle}
                   handleDoneViewing={this.goToRanker}
                   />,
-      RANKER: <Ranker titles={this.articleTitles}/>
+      RANKER: <Ranker
+                titles={this.articleTitles}
+                handleFinish={this.goToFinish}
+                />,
+      FINISH: <Finish handleRestart={this.goToArticles} />
     };
 
     this.state = {
-      currentView: this.viewStates.ARTICLES
+      currentView: this.viewStates.START
     };
   }
 
@@ -29,8 +38,17 @@ class ArticlesRanker extends React.Component {
     this.articleTitles.push(title);
   }
 
+  goToArticles() {
+    this.setState({ currentView: this.viewStates.ARTICLES });
+  }
+
   goToRanker() {
     this.setState({ currentView: this.viewStates.RANKER });
+  }
+
+  goToFinish() {
+    this.articleTitles = [];
+    this.setState({ currentView: this.viewStates.FINISH });
   }
 
   render() {

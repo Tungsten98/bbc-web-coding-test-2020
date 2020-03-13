@@ -10,6 +10,7 @@ class Ranker extends React.Component {
 
     this.titles = this.props.titles;
     this.numArticles = this.props.titles.length;
+    this.handleFinish = this.props.handleFinish;
 
     // Bind methods
     this.postRankings = this.postRankings.bind(this);
@@ -22,9 +23,12 @@ class Ranker extends React.Component {
       ranks[title] = undefined;
     }
 
+    document.title = "ArticlesRanker";
+
     this.state = {
       currentRank: 1,
-      ranks: ranks
+      ranks: ranks,
+      displayNotCompleteError: false
     }
   }
 
@@ -53,24 +57,21 @@ class Ranker extends React.Component {
 
     this.setState({
       currentRank: nextRank,
-      ranks: ranks
+      ranks: ranks,
+      displayNotCompleteError: false
     });
   }
 
   async postRankings() {
     try {
-      // Verify that all articles have been given a rank
-      for (let articleTitle of this.titles) {
-        if (this.state.ranks[articleTitle] === undefined) {
-          throw new Error("Not all articles are given a rank yet.");
-        }
-      }
-
       // POST the rankings to the server
       const response = await axios.post('/api/ranking', this.state.ranks);
       if (response.status !== 200) {
         throw new Error(
           "An unknown error has occured when submitting rankings");
+      }
+      else {
+        this.handleFinish();
       }
     } catch (error) {
       console.error(error);
@@ -80,6 +81,15 @@ class Ranker extends React.Component {
 
   handleSubmitClick(mouseClickEvent) {
     mouseClickEvent.preventDefault();
+
+    // Verify that all articles have been given a rank
+    for (let articleTitle of this.titles) {
+      if (this.state.ranks[articleTitle] === undefined) {
+        this.setState({ displayNotCompleteError: true });
+        return;
+      }
+    }
+
     this.postRankings();
   }
 
@@ -99,14 +109,30 @@ class Ranker extends React.Component {
     });
 
     return (
-      <form>
-        <table>
-          <tbody>
-            {articleTitles}
-          </tbody>
-        </table>
-        <Button onClick={this.postRankings} label="Submit rankings" />
-      </form>
+      <section>
+        <section>
+          <h1>Rank the articles</h1>
+        </section>
+        <section>
+          <p>Click on the article titles to assign a rank. Click on the title
+              again to remove the rank. Click on 'Submit rankings' once
+              you have ranked all the articles.</p>
+        </section>
+        <section>
+          <form>
+            <table>
+              <tbody>
+                {articleTitles}
+              </tbody>
+            </table>
+            <span className="error">
+              {this.state.displayNotCompleteError &&
+                "Please give a rank to all articles"}
+            </span>
+            <Button onClick={this.handleSubmitClick} label="Submit rankings" />
+          </form>
+        </section>
+      </section>
     );
   }
 }
