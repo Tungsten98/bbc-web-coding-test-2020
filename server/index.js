@@ -3,23 +3,17 @@ require('dotenv').config();
 
 // Use the Express framework for Node.js
 const express = require('express');
-const fetch = require('node-fetch');
+const fs = require('fs');
 
 // Define the port (3001)
 const port = process.env.SERVER_PORT || 3001;
 
 // Define some Express middleware that fetches and processes the required data
-const fetchArticleData = async (request, response, next) => {
-  // Fetch the article data using GitHub's REST API
-  const fetchUrl = 'https://api.github.com/repos/'
-    + 'bbc/news-coding-test-dataset/contents/data/'
-    + `${request.params.article_id}.json?ref=master`;
-
+const fetchArticleData = (request, response, next) => {
   try {
-    let data = await fetch(fetchUrl);
-    data = await data.json();
-    request.content = data.content;
-    request.encoding = data.encoding;
+    let data = fs.readFileSync(`server/db/${request.params.article_id}.json`,
+      'utf-8');
+    request.content = JSON.parse(data);
     next();
 
   } catch(error) {
@@ -29,33 +23,12 @@ const fetchArticleData = async (request, response, next) => {
   }
 };
 
-const decodeArticleData = async (request, response, next) => {
-  try {
-    // The content of the data returned from GitHub's REST API is encoded
-    // (in base-64), so we need to decode it before we can use it.
-    const content_buffer = Buffer.from(request.content, request.encoding);
-    const decoded_content = JSON.parse(content_buffer.toString());
-    request.content = decoded_content;
-    next();
-
-  } catch(error) {
-    next(error);
-  }
-};
-
 // Start the server
 const server = express();
 
-// Define responses to GET and POST requests
-// TODO: Consider a redirection to /article-1
-// server.get('/', (request, response) => {
-//
-// });
-
 // Covers all five articles using route parameters
-server.get('/:article_id(article-[12345])',
+server.get('/api/:article_id(article-[12345])',
   fetchArticleData,
-  decodeArticleData,
   (request, response) => {
     try {
       const data = request.content
